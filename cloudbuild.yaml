@@ -1,0 +1,35 @@
+steps:
+  # 1. Adım: Docker imajını oluştur (build et)
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '.'
+
+  # 2. Adım: Oluşturulan imajı Artifact Registry'ye yükle (push et)
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}'
+
+  # 3. Adım: Yeni imajı Cloud Run servisine dağıt (deploy et)
+  - name: 'gcr.io/google-cloud-sdk/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '--region'
+      - '${_REGION}'
+      - '--allow-unauthenticated' # Servisimiz public ise bu satır kalmalı
+
+# Oluşturulan imajların listesi
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}'
+
+# Değişkenler (Trigger ayarlarından gelecek)
+substitutions:
+  _SERVICE_NAME: 'hello-servisim' # Önceki adımda verdiğimiz servis adı
+  _REGION: 'europe-west1'         # Kullandığınız bölge
