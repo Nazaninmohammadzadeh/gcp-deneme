@@ -8,7 +8,7 @@ def hello_world():
     # Cloud Run'ın otomatik olarak sağladığı PORT değişkenini okur
     # Eğer bu değişken yoksa, lokalde test için 8080 portunu kullanır
     port = int(os.environ.get('PORT', 8080))
-    return f"Merhaba Dünya! Bu uygulama {port} portundan çalışıyor."
+    return f"Merhaba CI/CD! Otomasyon çalışıyor! Port: {port}"
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
