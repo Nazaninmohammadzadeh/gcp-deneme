@@ -1,5 +1,5 @@
 steps:
-  # 1. Adım: Docker imajını oluştur (build et)
+  # 1. Adım: Docker imajını oluştur
   - name: "gcr.io/cloud-builders/docker"
     args:
       - "build"
@@ -7,14 +7,16 @@ steps:
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}"
       - "."
 
-  # 2. Adım: Oluşturulan imajı Artifact Registry'ye yükle (push et)
+  # 2. Adım: İmajı Artifact Registry'ye yükle
   - name: "gcr.io/cloud-builders/docker"
     args:
       - "push"
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}"
 
-  # 3. Adım: Yeni imajı Cloud Run servisine dağıt (deploy et)
-  - name: "gcr.io/google-cloud-sdk/gcloud"
+  # 3. Adım: Cloud Run'a deploy et (GÜNCELLENDİ)
+  # Eski 'google-cloud-sdk' yerine güncel 'cloudsdktool' kullanıyoruz
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
     args:
       - "run"
       - "deploy"
@@ -23,18 +25,17 @@ steps:
       - "${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}"
       - "--region"
       - "${_REGION}"
-      - "--allow-unauthenticated" # Servisimiz public ise bu satır kalmalı
+      - "--allow-unauthenticated"
 
-# Oluşturulan imajların listesi
+# Oluşturulan imajlar
 images:
   - "${_REGION}-docker.pkg.dev/$PROJECT_ID/hello-run-repo/${_SERVICE_NAME}:${SHORT_SHA}"
 
-# Değişkenler (Trigger ayarlarından gelecek)
+# Değişkenler
 substitutions:
-  _SERVICE_NAME: "hello-servisim" # Önceki adımda verdiğimiz servis adı
-  _REGION: "europe-west1" # Kullandığınız bölge
+  _SERVICE_NAME: "hello-servisim"
+  _REGION: "europe-west1"
 
-# --- İŞTE EKSİK OLAN KISIM BURASI ---
-# Bu kısım olmadan "invalid argument" hatası alırsınız.
+# Log ayarı
 options:
   logging: CLOUD_LOGGING_ONLY
