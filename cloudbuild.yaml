@@ -1,4 +1,14 @@
 steps:
+  # --- YENİ EKLENEN ADIM: BİRİM TESTLERİ ---
+  # Docker imajı oluşturmadan önce kodu test ediyoruz.
+  # Hata varsa süreç burada durur.
+  - name: "python:3.11-slim"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        pip install -r requirements.txt
+        python -m unittest test_app.py
   # 1. Adım: Docker imajını oluştur
   - name: "gcr.io/cloud-builders/docker"
     args:
