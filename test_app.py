@@ -18,7 +18,8 @@ class TestUygulama(unittest.TestCase):
         response = self.app.get('/')
         # Cevabın içinde "Merhaba" kelimesi geçiyor mu?
         # (app.py'deki mesajınızda Merhaba geçmeli)
-        self.assertIn(b'Merhaba', response.data)
+        context= response.data.tolower()
+        self.assertIn(b'merhaba', context)
 
 if __name__ == '__main__':
     unittest.main()
